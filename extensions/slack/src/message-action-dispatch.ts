@@ -188,7 +188,7 @@ export async function handleSlackMessageAction(params: {
     const sortDir = readStringParam(actionParams, "sortDir") as "asc" | "desc" | undefined;
     const page = readNumberParam(actionParams, "page", { integer: true });
     const channelId = readStringParam(actionParams, "channelId");
-    // channelId がある場合、Slack の search query に "in:<channel>" を付与する
+    // Scope search to a specific channel when channelId is provided
     const fullQuery = channelId ? `${query} in:${channelId}` : query;
     return await invoke(
       {

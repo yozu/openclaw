@@ -312,7 +312,7 @@ export async function searchSlackMessages(
     page?: number;
   } = {},
 ): Promise<SlackSearchResult> {
-  // search.messages は User Token (xoxp-) でのみ動作する
+  // search.messages requires a User Token (xoxp-), not a Bot Token
   const client = await getClient(opts);
   const result = await client.search.messages({
     query,
