@@ -467,7 +467,17 @@ export async function handleSlackAction(
       sortDir: sortDir ?? undefined,
       page: page ?? undefined,
     });
-    return jsonResult({ ok: true, ...result });
+    // Wrap matches in `results.messages` so the CLI text formatter renders
+    // them via the shared search-results path (extractDiscordSearchResultsMessages).
+    return jsonResult({
+      ok: true,
+      results: {
+        messages: result.matches,
+      },
+      total: result.total,
+      page: result.page,
+      pages: result.pages,
+    });
   }
 
   if (action === "emojiList") {

@@ -35,8 +35,10 @@ export function listSlackMessageActions(cfg: OpenClawConfig): ChannelMessageActi
     actions.add("delete");
     actions.add("download-file");
     actions.add("upload-file");
-    // search requires a User Token (xoxp-) — only advertise when at least one account has it
-    if (accounts.some((account) => account.userToken?.trim())) {
+    // search requires a User Token (xoxp-) — check ALL enabled accounts (not just
+    // bot-token accounts) so user-token-only setups can still discover search.
+    const allAccounts = listEnabledSlackAccounts(cfg);
+    if (allAccounts.some((account) => account.userToken?.trim())) {
       actions.add("search");
     }
   }
