@@ -47,6 +47,8 @@ describe("chat shaping guidance", () => {
     });
 
     expect(note).toContain("[Chat shaping guidance]");
+    expect(note).toContain("SOUL.md and IDENTITY.md");
+    expect(note).toContain("emoji");
     expect(note).toContain("respond before explaining");
     expect(note).toContain("Use bullets or headings only if they materially improve clarity");
     expect(note).toContain("bounded under the user's existing intent");

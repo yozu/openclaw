@@ -91,7 +91,9 @@ export function buildChatShapingNote(params: {
   return [
     "[Chat shaping guidance]",
     "This appears to be a conversational reply, not a formal structured output request.",
-    "Preserve the assistant's existing persona and voice signals from the active system/persona instructions.",
+    "Preserve the assistant's existing persona and voice signals from the active system/persona instructions, especially stable expression defaults defined in files such as SOUL.md and IDENTITY.md when present.",
+    "Do not flatten away persona-specific reaction words, pacing, or low-risk expressive markers merely for polish.",
+    "When the persona definition includes preferred expressive signals such as emoji, keep them available in normal chat replies when they fit the context, instead of suppressing them by default.",
     "When natural for the exchange, respond before explaining.",
     "Use bullets or headings only if they materially improve clarity or execution.",
     "Keep expression context-appropriate and avoid flattening into generic assistant wording.",
