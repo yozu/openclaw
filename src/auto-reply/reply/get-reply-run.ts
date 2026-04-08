@@ -13,6 +13,7 @@ import type { SessionEntry } from "../../config/sessions/types.js";
 import { logVerbose } from "../../globals.js";
 import { clearCommandLane, getQueueSize } from "../../process/command-queue.js";
 import { normalizeMainKey } from "../../routing/session-key.js";
+import { normalizeOptionalString } from "../../shared/string-coerce.js";
 import { isReasoningTagProvider } from "../../utils/provider-utils.js";
 import { hasControlCommand } from "../command-detection.js";
 import { resolveEnvelopeFormatOptions } from "../envelope.js";
@@ -37,6 +38,7 @@ import { shouldUseReplyFastTestRuntime } from "./get-reply-fast-path.js";
 import { resolvePreparedReplyQueueState } from "./get-reply-run-queue.js";
 import { buildGroupChatContext, buildGroupIntro } from "./groups.js";
 import { buildInboundMetaSystemPrompt, buildInboundUserContextPrefix } from "./inbound-meta.js";
+import { sanitizeInboundSystemTags } from "./inbound-text.js";
 import type { createModelSelectionState } from "./model-selection.js";
 import { resolveOriginMessageProvider } from "./origin-routing.js";
 import { buildReplyPromptBodies } from "./prompt-prelude.js";
@@ -222,7 +224,7 @@ export async function runPreparedReply(
         silentToken: SILENT_REPLY_TOKEN,
       })
     : "";
-  const groupSystemPrompt = sessionCtx.GroupSystemPrompt?.trim() ?? "";
+  const groupSystemPrompt = normalizeOptionalString(sessionCtx.GroupSystemPrompt) ?? "";
   const inboundMetaPrompt = buildInboundMetaSystemPrompt(
     isNewSession ? sessionCtx : { ...sessionCtx, ThreadStarterBody: undefined },
     { includeFormattingHints: !useFastReplyRuntime },
@@ -258,7 +260,7 @@ export async function runPreparedReply(
     isNewSession
       ? {
           ...sessionCtx,
-          ...(sessionCtx.ThreadHistoryBody?.trim()
+          ...(normalizeOptionalString(sessionCtx.ThreadHistoryBody)
             ? { InboundHistory: undefined, ThreadStarterBody: undefined }
             : {}),
         }
@@ -308,11 +310,10 @@ export async function runPreparedReply(
     }
   }
   const prefixedBodyCore = prefixedBodyBase;
-  const threadStarterBody =
-    typeof ctx.ThreadStarterBody === "string" ? ctx.ThreadStarterBody.trim() : undefined;
-  const threadHistoryBody =
-    typeof ctx.ThreadHistoryBody === "string" ? ctx.ThreadHistoryBody.trim() : undefined;
-  const replyToBody = typeof ctx.ReplyToBody === "string" ? ctx.ReplyToBody.trim() : undefined;
+  const threadStarterBody = normalizeOptionalString(ctx.ThreadStarterBody);
+  const threadHistoryBody = normalizeOptionalString(ctx.ThreadHistoryBody);
+  const replyToBodyRaw = normalizeOptionalString(ctx.ReplyToBody);
+  const replyToBody = replyToBodyRaw ? sanitizeInboundSystemTags(replyToBodyRaw) : undefined;
   const deicticResolutionNote = buildDeicticResolutionNote({
     userText: rawBodyTrimmed,
     replyToBody,
@@ -324,7 +325,6 @@ export async function runPreparedReply(
     replyToBody,
     threadHistoryBody,
     threadStarterBody,
-    groupSystemPrompt,
     isGroupChat,
   });
   const threadContextNote = [
