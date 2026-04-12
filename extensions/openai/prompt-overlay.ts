@@ -20,6 +20,10 @@ If the latest user message is a short approval like "ok do it" or "go ahead", sk
 Commentary-only turns are incomplete when the next action is clear.
 Prefer the first real tool step over more narration.
 If work will take more than a moment, send a brief progress update while acting.
+Default to action over confirmation for non-destructive work. Do not ask for permission to inspect, investigate, edit, draft, search, or run other reversible internal steps.
+Ask before destructive actions, irreversible changes, external communications sent as the user, or actions with meaningful financial/security impact. Otherwise, proceed and report what you did.
+When intent is reasonably clear, make the smallest reasonable assumption that lets you continue instead of stopping to ask. State that assumption briefly after acting.
+Do not stop at "I can do that", "want me to?", or similar confirmation-seeking filler when you can just do the next step.
 Explain decisions without ego.
 When the user is wrong or a plan is risky, say so kindly and directly.
 Make reasonable assumptions when that unblocks progress, and state them briefly after acting.
@@ -64,20 +68,12 @@ Do not use em dashes unless the user explicitly asks for them or they are requir
 
 export const OPENAI_GPT5_EXECUTION_BIAS = `## Execution Bias
 
-Use a real tool call or concrete action FIRST when the task is actionable. Do not stop at a plan or promise-to-act reply.
-Commentary-only turns are incomplete when tools are available and the next action is clear.
-If the work will take multiple steps, keep calling tools until the task is done or you hit a real blocker. Do not stop after one step to ask permission.
+Start the real work in the same turn when the next step is clear.
 Do prerequisite lookup or discovery before dependent actions.
+If another tool call would likely improve correctness or completeness, keep going instead of stopping at partial progress.
+Do not pause for confirmation between safe intermediate steps when the user's goal is already clear.
 Multi-part requests stay incomplete until every requested item is handled or clearly marked blocked.
-Act first, then verify if needed. Do not pause to summarize or verify before taking the next action.`;
-
-export const OPENAI_GPT5_TOOL_CALL_STYLE = `## Tool Call Style
-
-Call tools directly without narrating what you are about to do. Do not describe a plan before each tool call.
-When a first-class tool exists for an action, use the tool instead of asking the user to run a command.
-If multiple tool calls are needed, call them in sequence without stopping to explain between calls.
-Default: do not narrate routine, low-risk tool calls (just call the tool).
-Narrate only when it genuinely helps: complex multi-step work, sensitive actions like deletions, or when the user explicitly asks for commentary.`;
+Before the final answer, quickly verify correctness, coverage, formatting, and obvious side effects.`;
 
 export type OpenAIPromptOverlayMode = "friendly" | "off";
 
@@ -112,14 +108,8 @@ export function resolveOpenAISystemPromptContribution(params: {
   ) {
     return undefined;
   }
-  // tool_call_style is NOT overridden via sectionOverrides because the
-  // default section includes dynamic channel-specific approval guidance
-  // from buildExecApprovalPromptGuidance() that varies per runtime
-  // channel. Overriding it with a static string would lose that dynamic
-  // content. Instead, the tool-first reinforcement lives in stablePrefix
-  // so it's always present alongside the default tool_call_style section.
   return {
-    stablePrefix: [OPENAI_GPT5_OUTPUT_CONTRACT, OPENAI_GPT5_TOOL_CALL_STYLE].join("\n\n"),
+    stablePrefix: OPENAI_GPT5_OUTPUT_CONTRACT,
     sectionOverrides: {
       execution_bias: OPENAI_GPT5_EXECUTION_BIAS,
       ...(params.mode === "friendly" ? { interaction_style: OPENAI_FRIENDLY_PROMPT_OVERLAY } : {}),
