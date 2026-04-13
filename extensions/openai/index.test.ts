@@ -14,7 +14,6 @@ import {
   OPENAI_FRIENDLY_PROMPT_OVERLAY,
   OPENAI_GPT5_EXECUTION_BIAS,
   OPENAI_GPT5_OUTPUT_CONTRACT,
-  OPENAI_GPT5_TOOL_CALL_STYLE,
 } from "./prompt-overlay.js";
 
 const runtimeMocks = vi.hoisted(() => ({
@@ -366,7 +365,7 @@ describe("openai plugin", () => {
     };
 
     expect(openaiProvider.resolveSystemPromptContribution?.(contributionContext)).toEqual({
-      stablePrefix: [OPENAI_GPT5_OUTPUT_CONTRACT, OPENAI_GPT5_TOOL_CALL_STYLE].join("\n\n"),
+      stablePrefix: OPENAI_GPT5_OUTPUT_CONTRACT,
       sectionOverrides: {
         interaction_style: OPENAI_FRIENDLY_PROMPT_OVERLAY,
         execution_bias: OPENAI_GPT5_EXECUTION_BIAS,
@@ -383,7 +382,7 @@ describe("openai plugin", () => {
       "Occasional emoji are welcome when they fit naturally, especially for warmth or brief celebration; keep them sparse.",
     );
     expect(codexProvider.resolveSystemPromptContribution?.(contributionContext)).toEqual({
-      stablePrefix: [OPENAI_GPT5_OUTPUT_CONTRACT, OPENAI_GPT5_TOOL_CALL_STYLE].join("\n\n"),
+      stablePrefix: OPENAI_GPT5_OUTPUT_CONTRACT,
       sectionOverrides: {
         interaction_style: OPENAI_FRIENDLY_PROMPT_OVERLAY,
         execution_bias: OPENAI_GPT5_EXECUTION_BIAS,
@@ -406,6 +405,12 @@ describe("openai plugin", () => {
     );
     expect(OPENAI_FRIENDLY_PROMPT_OVERLAY).toContain(
       "Commentary-only turns are incomplete when the next action is clear.",
+    );
+    expect(OPENAI_FRIENDLY_PROMPT_OVERLAY).toContain(
+      "Default to action over confirmation for non-destructive work. Do not ask for permission to inspect, investigate, edit, draft, search, or run other reversible internal steps.",
+    );
+    expect(OPENAI_FRIENDLY_PROMPT_OVERLAY).toContain(
+      'Do not stop at "I can do that", "want me to?", or similar confirmation-seeking filler when you can just do the next step.',
     );
     expect(OPENAI_FRIENDLY_PROMPT_OVERLAY).toContain(
       'Use brief first-person feeling language when it helps the interaction feel human: "I\'m glad we caught that", "I\'m excited about this direction", "I\'m worried this will break", "that\'s frustrating".',
@@ -456,21 +461,11 @@ describe("openai plugin", () => {
       "Occasional emoji are welcome when they fit naturally, especially for warmth or brief celebration; keep them sparse.",
     );
     expect(OPENAI_GPT5_EXECUTION_BIAS).toContain(
-      "Use a real tool call or concrete action FIRST when the task is actionable. Do not stop at a plan or promise-to-act reply.",
-    );
-    expect(OPENAI_GPT5_EXECUTION_BIAS).toContain(
-      "If the work will take multiple steps, keep calling tools until the task is done or you hit a real blocker. Do not stop after one step to ask permission.",
-    );
-    expect(OPENAI_GPT5_EXECUTION_BIAS).toContain(
       "Do prerequisite lookup or discovery before dependent actions.",
     );
-    expect(OPENAI_GPT5_TOOL_CALL_STYLE).toContain(
-      "Call tools directly without narrating what you are about to do. Do not describe a plan before each tool call.",
+    expect(OPENAI_GPT5_EXECUTION_BIAS).toContain(
+      "Do not pause for confirmation between safe intermediate steps when the user's goal is already clear.",
     );
-    expect(OPENAI_GPT5_TOOL_CALL_STYLE).toContain(
-      "When a first-class tool exists for an action, use the tool instead of asking the user to run a command.",
-    );
-    expect(OPENAI_GPT5_TOOL_CALL_STYLE).not.toContain("/approve");
     expect(OPENAI_GPT5_OUTPUT_CONTRACT).toContain(
       "Return the requested sections only, in the requested order.",
     );
@@ -500,7 +495,7 @@ describe("openai plugin", () => {
         agentId: undefined,
       }),
     ).toEqual({
-      stablePrefix: [OPENAI_GPT5_OUTPUT_CONTRACT, OPENAI_GPT5_TOOL_CALL_STYLE].join("\n\n"),
+      stablePrefix: OPENAI_GPT5_OUTPUT_CONTRACT,
       sectionOverrides: {
         interaction_style: OPENAI_FRIENDLY_PROMPT_OVERLAY,
         execution_bias: OPENAI_GPT5_EXECUTION_BIAS,
@@ -528,7 +523,7 @@ describe("openai plugin", () => {
         agentId: undefined,
       }),
     ).toEqual({
-      stablePrefix: [OPENAI_GPT5_OUTPUT_CONTRACT, OPENAI_GPT5_TOOL_CALL_STYLE].join("\n\n"),
+      stablePrefix: OPENAI_GPT5_OUTPUT_CONTRACT,
       sectionOverrides: {
         execution_bias: OPENAI_GPT5_EXECUTION_BIAS,
       },
@@ -554,7 +549,7 @@ describe("openai plugin", () => {
         agentId: undefined,
       }),
     ).toEqual({
-      stablePrefix: [OPENAI_GPT5_OUTPUT_CONTRACT, OPENAI_GPT5_TOOL_CALL_STYLE].join("\n\n"),
+      stablePrefix: OPENAI_GPT5_OUTPUT_CONTRACT,
       sectionOverrides: {
         execution_bias: OPENAI_GPT5_EXECUTION_BIAS,
       },
@@ -581,7 +576,7 @@ describe("openai plugin", () => {
         agentId: undefined,
       }),
     ).toEqual({
-      stablePrefix: [OPENAI_GPT5_OUTPUT_CONTRACT, OPENAI_GPT5_TOOL_CALL_STYLE].join("\n\n"),
+      stablePrefix: OPENAI_GPT5_OUTPUT_CONTRACT,
       sectionOverrides: {
         interaction_style: OPENAI_FRIENDLY_PROMPT_OVERLAY,
         execution_bias: OPENAI_GPT5_EXECUTION_BIAS,
@@ -608,7 +603,7 @@ describe("openai plugin", () => {
         agentId: undefined,
       }),
     ).toEqual({
-      stablePrefix: [OPENAI_GPT5_OUTPUT_CONTRACT, OPENAI_GPT5_TOOL_CALL_STYLE].join("\n\n"),
+      stablePrefix: OPENAI_GPT5_OUTPUT_CONTRACT,
       sectionOverrides: {
         interaction_style: OPENAI_FRIENDLY_PROMPT_OVERLAY,
         execution_bias: OPENAI_GPT5_EXECUTION_BIAS,
