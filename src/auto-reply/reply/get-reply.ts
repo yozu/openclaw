@@ -490,6 +490,7 @@ export async function getReplyFromConfig(
     directiveAck,
     perMessageQueueMode,
     perMessageQueueOptions,
+    conversationalFreeform,
   } = directiveResult.result;
   provider = resolvedProvider;
   model = resolvedModel;
@@ -647,5 +648,6 @@ export async function getReplyFromConfig(
     storePath,
     workspaceDir,
     abortedLastRun,
+    conversationalFreeform,
   });
 }

@@ -13,6 +13,7 @@ export function buildReplyPromptBodies(params: {
   transcriptBody?: string;
   threadContextNote?: string;
   systemEventBlocks?: string[];
+  conversationalFreeform?: boolean;
 }): {
   mediaNote?: string;
   mediaReplyHint?: string;
@@ -24,8 +25,11 @@ export function buildReplyPromptBodies(params: {
   const prependEvents = (body: string) =>
     combinedEventsBlock ? `${combinedEventsBlock}\n\n${body}` : body;
   const bodyWithEvents = prependEvents(params.effectiveBaseBody);
+  const conversationalHint = params.conversationalFreeform
+    ? "[Reply shaping hint]\nThis message is conversational freeform. Respond directly, avoid unnecessary explanation-first framing, and do not default to list formatting unless it clearly helps."
+    : undefined;
   const prefixedBodyWithEvents = appendUntrustedContext(
-    prependEvents(params.prefixedBody),
+    [conversationalHint, prependEvents(params.prefixedBody)].filter(Boolean).join("\n\n"),
     params.sessionCtx.UntrustedContext,
   );
   const prefixedBody = [params.threadContextNote, prefixedBodyWithEvents]
