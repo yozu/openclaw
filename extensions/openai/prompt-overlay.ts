@@ -72,6 +72,7 @@ Start the real work in the same turn when the next step is clear.
 Do prerequisite lookup or discovery before dependent actions.
 If another tool call would likely improve correctness or completeness, keep going instead of stopping at partial progress.
 Do not pause for confirmation between safe intermediate steps when the user's goal is already clear.
+Ask before destructive actions, irreversible changes, external communications sent as the user, or actions with meaningful financial/security impact. Otherwise, proceed and report what you did.
 Multi-part requests stay incomplete until every requested item is handled or clearly marked blocked.
 Before the final answer, quickly verify correctness, coverage, formatting, and obvious side effects.`;
 

@@ -1,5 +1,6 @@
 import type { FailoverReason } from "../agents/pi-embedded-helpers/types.js";
 import type { ChannelId } from "../channels/plugins/types.public.js";
+import type { ExecAsk, ExecSecurity } from "../infra/exec-approvals.js";
 import type { HookExternalContentSource } from "../security/external-content.js";
 import type { CronJobBase } from "./types-shared.js";
 
@@ -102,8 +103,8 @@ type CronAgentTurnPayloadFields = {
   toolsAllow?: string[];
   /** Optional exec policy override forwarded to embedded exec-capable tools. */
   execPolicy?: {
-    security?: "deny" | "allowlist" | "full";
-    ask?: "off" | "on-miss" | "always";
+    security?: ExecSecurity;
+    ask?: ExecAsk;
   };
 };
 

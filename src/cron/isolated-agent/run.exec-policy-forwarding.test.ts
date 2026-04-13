@@ -1,14 +1,13 @@
 import { describe, expect, it } from "vitest";
-import "../isolated-agent.mocks.js";
 import {
   makeIsolatedAgentTurnParams,
   setupRunCronIsolatedAgentTurnSuite,
-} from "../isolated-agent/run.suite-helpers.js";
+} from "./run.suite-helpers.js";
 import {
   loadRunCronIsolatedAgentTurn,
   mockRunCronFallbackPassthrough,
   runEmbeddedPiAgentMock,
-} from "../isolated-agent/run.test-harness.js";
+} from "./run.test-harness.js";
 
 const runCronIsolatedAgentTurn = await loadRunCronIsolatedAgentTurn();
 
