@@ -466,6 +466,9 @@ describe("openai plugin", () => {
     expect(OPENAI_GPT5_EXECUTION_BIAS).toContain(
       "Do not pause for confirmation between safe intermediate steps when the user's goal is already clear.",
     );
+    expect(OPENAI_GPT5_EXECUTION_BIAS).toContain(
+      "Ask before destructive actions, irreversible changes, external communications sent as the user, or actions with meaningful financial/security impact. Otherwise, proceed and report what you did.",
+    );
     expect(OPENAI_GPT5_OUTPUT_CONTRACT).toContain(
       "Return the requested sections only, in the requested order.",
     );
