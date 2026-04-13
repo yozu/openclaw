@@ -428,10 +428,15 @@ function emitFailureAlert(
 ) {
   const safeJobName = params.job.name || params.job.id;
   const truncatedError = (params.error?.trim() || "unknown reason").slice(0, 200);
+  const errorReason =
+    typeof params.error === "string"
+      ? (resolveFailoverReasonFromError(params.error) ?? undefined)
+      : undefined;
   const statusVerb = params.status === "skipped" ? "skipped" : "failed";
   const detailLabel = params.status === "skipped" ? "Skip reason" : "Last error";
   const text = [
     `Cron job "${safeJobName}" ${statusVerb} ${params.consecutiveErrors} times`,
+    ...(errorReason ? [`Cause: ${errorReason}`] : []),
     `${detailLabel}: ${truncatedError}`,
   ].join("\n");
 
