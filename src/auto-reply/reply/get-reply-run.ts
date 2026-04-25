@@ -806,8 +806,8 @@ export async function runPreparedReply(
         // Surface can carry relayed metadata (for example "webchat") while Provider
         // still reflects the active channel that should own tool routing.
         provider: ctx.Provider ?? ctx.Surface ?? sessionCtx.Provider,
-      groupChannel: sessionCtx.GroupChannel?.trim() || sessionCtx.GroupSubject?.trim() || undefined,
-      groupSpace: sessionCtx.GroupSpace?.trim() || undefined,
+      }),
+      agentAccountId: sessionCtx.AccountId,
       groupId: resolveGroupSessionKey(sessionCtx)?.id ?? undefined,
       groupChannel:
         normalizeOptionalString(sessionCtx.GroupChannel) ??
