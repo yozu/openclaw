@@ -781,7 +781,7 @@ export async function runPreparedReply(
     chatShapingNote,
     threadHistoryBody
       ? `[Thread history - for context]\n${threadHistoryBody}`
-      : threadStarterBody
+      : !isNewSession && threadStarterBody
         ? `[Thread starter - for context]\n${threadStarterBody}`
         : undefined,
   ]
