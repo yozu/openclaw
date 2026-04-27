@@ -57,10 +57,28 @@ export function isLikelyConversationalFreeformBody(body: string): boolean {
   if (!trimmed) {
     return false;
   }
-  if (/^\s*[-*=#]{2,}\s*$/m.test(trimmed)) {
+  if (/^\s*Use the "[^"]+" skill for this request\.\s+User input\s*:/i.test(trimmed)) {
     return false;
   }
-  if (/^\s*(#{1,6}|[-*+]\s|\d+[.)]\s|```)/m.test(trimmed)) {
+  if (
+    /^\s*(?:\[[^\]]+\]\s*)?(?:Subagent Task|Task|User input|Input|Instructions?)\s*:/i.test(trimmed)
+  ) {
+    return false;
+  }
+  if (/\bYou are running as a subagent\b/i.test(trimmed)) {
+    return false;
+  }
+  const stripped = stripStructuralPrefixes(segment).trim();
+  if (!stripped) {
+    return false;
+  }
+  if (/^\s*\/[A-Za-z][\w-]*(?:\s|$)/.test(stripped)) {
+    return false;
+  }
+  if (/^\s*[-*=#]{2,}\s*$/m.test(stripped)) {
+    return false;
+  }
+  if (/^\s*(#{1,6}|[-*+]\s|\d+[.)]\s|```)/m.test(stripped)) {
     return false;
   }
   const lineCount = trimmed.split(/\n/).length;

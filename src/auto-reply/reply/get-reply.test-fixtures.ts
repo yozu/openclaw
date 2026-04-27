@@ -141,11 +141,13 @@ export function registerGetReplyRuntimeOverrides(handles: {
   initSessionState: (...args: unknown[]) => unknown;
   handleInlineActions?: (...args: unknown[]) => unknown;
 }): void {
-  vi.doMock("./get-reply-directives.js", () => ({
-    resolveReplyDirectives: (...args: unknown[]) => handles.resolveReplyDirectives(...args),
-    // mock経由でも runPreparedReply 直前の再判定で参照されるので、軽量な実体を返す
-    isLikelyConversationalFreeformBody: (_body?: string) => false,
-  }));
+  vi.doMock("./get-reply-directives.js", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("./get-reply-directives.js")>();
+    return {
+      ...actual,
+      resolveReplyDirectives: (...args: unknown[]) => handles.resolveReplyDirectives(...args),
+    };
+  });
   vi.doMock("./get-reply-inline-actions.js", () => ({
     handleInlineActions:
       handles.handleInlineActions ?? vi.fn(async () => ({ kind: "reply", reply: { text: "ok" } })),
