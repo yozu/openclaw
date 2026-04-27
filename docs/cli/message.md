@@ -125,9 +125,10 @@ Name lookup:
   - Matrix only: available when Matrix encryption is enabled and verification actions are allowed
 
 - `search`
-  - Channels: Discord
-  - Required: `--guild-id`, `--query`
-  - Optional: `--channel-id`, `--channel-ids` (repeat), `--author-id`, `--author-ids` (repeat), `--limit`
+  - Channels: Discord/Slack
+  - Required: `--query` (+ `--guild-id` for Discord)
+  - Optional: `--channel-id`, `--channel-ids` (repeat), `--author-id`, `--author-ids` (repeat), `--channel-name` (Slack), `--limit`
+  - Slack: requires a user token with `search:read`; use `--channel-name` for `in:` scoping because Slack search expects channel names, not channel IDs
 
 ### Threads
 

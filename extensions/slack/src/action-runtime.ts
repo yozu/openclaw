@@ -493,6 +493,7 @@ export async function handleSlackAction(
     }
     const query = readStringParam(params, "query", { required: true });
     const channelId = readStringParam(params, "channelId");
+    const channelName = readStringParam(params, "channelName");
     const count = readNumberParam(params, "count", { integer: true });
     const sort = readStringParam(params, "sort") as "score" | "timestamp" | undefined;
     const sortDir = readStringParam(params, "sortDir") as "asc" | "desc" | undefined;
@@ -501,6 +502,7 @@ export async function handleSlackAction(
       ...(accountId ? { accountId } : {}),
       token: userToken,
       channelId: channelId ?? undefined,
+      channelName: channelName ?? undefined,
       count: count ?? undefined,
       sort: sort ?? undefined,
       sortDir: sortDir ?? undefined,

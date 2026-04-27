@@ -345,6 +345,7 @@ export async function searchSlackMessages(
   query: string,
   opts: SlackActionClientOpts & {
     channelId?: string;
+    channelName?: string;
     count?: number;
     sort?: "score" | "timestamp";
     sortDir?: "asc" | "desc";
@@ -352,17 +353,13 @@ export async function searchSlackMessages(
   } = {},
 ): Promise<SlackSearchResult> {
   const client = await getClient(opts);
-  // channelIdが指定されたら conversations.info で channel name を解決して
-  // Slackのsearch.messages文法に沿った in:channel_name を query に組み立てる
   let scopedQuery = query;
-  if (opts.channelId?.trim()) {
+  const directChannelName = opts.channelName?.trim();
+  if (directChannelName) {
+    scopedQuery = `${query} in:${directChannelName}`;
+  } else if (opts.channelId?.trim()) {
     const channelName = await resolveSlackChannelName(client, opts.channelId.trim());
-    if (channelName) {
-      scopedQuery = `${query} in:${channelName}`;
-    } else {
-      // 名前解決に失敗した場合はchannel mention link形式を使う（Slackが解釈する）
-      scopedQuery = `${query} in:<#${opts.channelId.trim()}>`;
-    }
+    scopedQuery = channelName ? `${query} in:${channelName}` : `${query} in:<#${opts.channelId.trim()}>`;
   }
   const result = await client.search.messages({
     query: scopedQuery,
