@@ -155,8 +155,22 @@ export async function handleSlackAction(
     );
   const action = readStringParam(params, "action", { required: true });
   const accountId = readStringParam(params, "accountId");
-  const { resolveSlackAccount } = await loadSlackAccountsRuntime();
-  const account = resolveSlackAccount({ cfg, accountId });
+  const { listEnabledSlackAccounts, resolveSlackAccount } = await loadSlackAccountsRuntime();
+  let account = resolveSlackAccount({ cfg, accountId });
+
+  if (action === "searchMessages" && !accountId) {
+    const searchAccount = listEnabledSlackAccounts(cfg).find((candidate) => {
+      if (!candidate.userToken?.trim()) {
+        return false;
+      }
+      const candidateGate = createActionGate(candidate.actions ?? cfg.channels?.slack?.actions);
+      return candidateGate("messages", true);
+    });
+    if (searchAccount) {
+      account = searchAccount;
+    }
+  }
+
   const actionConfig = account.actions ?? cfg.channels?.slack?.actions;
   const isActionEnabled = createActionGate(actionConfig);
   const userToken = account.userToken;
@@ -499,7 +513,7 @@ export async function handleSlackAction(
     const sortDir = readStringParam(params, "sortDir") as "asc" | "desc" | undefined;
     const page = readNumberParam(params, "page", { integer: true });
     const result = await slackActionRuntime.searchSlackMessages(query, {
-      ...(accountId ? { accountId } : {}),
+      accountId: account.accountId,
       token: userToken,
       channelId: channelId ?? undefined,
       channelName: channelName ?? undefined,
