@@ -155,6 +155,15 @@ function swiftType(schema: JsonSchema, required: boolean, allowStructuralNamed =
   return isOptional ? `${base}?` : base;
 }
 
+const sourceCompatibleOptionalInitDefaults = new Set<string>(["CronRunLogEntry.errorReason"]);
+
+function swiftInitDefaultValue(structName: string, propertyKey: string, required: boolean): string {
+  if (required) {
+    return "";
+  }
+  return sourceCompatibleOptionalInitDefaults.has(`${structName}.${propertyKey}`) ? " = nil" : "";
+}
+
 function emitEnum(name: string, schema: JsonSchema): string {
   const cases = schema.enum ?? [];
   return [
@@ -190,7 +199,7 @@ function emitStruct(name: string, schema: JsonSchema): string {
         .map(([key, prop]) => {
           const propName = safeName(key);
           const req = required.has(key);
-          return `        ${propName}: ${swiftType(prop, true)}${req ? "" : "?"}`;
+          return `        ${propName}: ${swiftType(prop, true)}${req ? "" : "?"}${swiftInitDefaultValue(name, key, req)}`;
         })
         .join(",\n") +
       ")\n" +
